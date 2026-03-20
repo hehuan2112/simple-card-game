@@ -1,0 +1,290 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Google Fonts fallback & base ── */
+@layer base {
+  * { box-sizing: border-box; }
+
+  html, body, #app {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  body {
+    background-color: #050811;
+    color: #e8d5b0;
+    font-family: 'Noto Serif SC', 'Georgia', serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overscroll-behavior: none;
+  }
+}
+
+/* ── Game app shell ── */
+.game-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  height: 100vh;
+  background:
+    radial-gradient(ellipse 80% 60% at 15% 10%,  rgba(26, 74, 139, 0.12) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 50% at 85% 90%,  rgba(122, 21, 21, 0.10) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 40% at 50% 50%,  rgba(212, 175, 55, 0.03) 0%, transparent 70%),
+    #050811;
+  position: relative;
+  overflow: hidden;
+}
+
+/* subtle star-field overlay */
+.game-shell::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 15%  25%, rgba(255,255,255,0.25) 0%, transparent 100%),
+    radial-gradient(1px 1px at 42%  68%, rgba(255,255,255,0.18) 0%, transparent 100%),
+    radial-gradient(1px 1px at 72%  18%, rgba(255,255,255,0.22) 0%, transparent 100%),
+    radial-gradient(1px 1px at 88%  55%, rgba(255,255,255,0.15) 0%, transparent 100%),
+    radial-gradient(1px 1px at 30%  82%, rgba(255,255,255,0.20) 0%, transparent 100%),
+    radial-gradient(1px 1px at 60%  40%, rgba(255,255,255,0.12) 0%, transparent 100%),
+    radial-gradient(1px 1px at 8%   60%, rgba(255,255,255,0.18) 0%, transparent 100%),
+    radial-gradient(1px 1px at 95%  30%, rgba(255,255,255,0.20) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.game-shell > * { position: relative; z-index: 1; }
+
+/* ── Panel transitions ── */
+.fade-enter-active,
+.fade-leave-active { transition: opacity 0.25s ease, transform 0.25s ease; }
+.fade-enter-from   { opacity: 0; transform: translateY(8px); }
+.fade-leave-to     { opacity: 0; transform: translateY(-8px); }
+
+/* ── Scrollable panel ── */
+.panel-scroll {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(212,175,55,0.3) transparent;
+}
+.panel-scroll::-webkit-scrollbar       { width: 4px; }
+.panel-scroll::-webkit-scrollbar-track { background: transparent; }
+.panel-scroll::-webkit-scrollbar-thumb { background: rgba(212,175,55,0.3); border-radius: 2px; }
+
+/* ── Card base ── */
+.game-card {
+  position: relative;
+  border-radius: 8px;
+  border: 1.5px solid rgba(212, 175, 55, 0.30);
+  overflow: hidden;
+  user-select: none;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  flex-shrink: 0;
+}
+
+.game-card:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.6), 0 0 12px rgba(212,175,55,0.2);
+  border-color: rgba(212, 175, 55, 0.6);
+}
+
+.game-card.selected {
+  border-color: #d4af37;
+  box-shadow: 0 0 20px rgba(212,175,55,0.6), 0 0 40px rgba(212,175,55,0.2);
+  transform: translateY(-4px) scale(1.04);
+}
+
+/* Owner tint overlays */
+.game-card.owner-player::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(52, 152, 219, 0.12);
+  pointer-events: none;
+  border-radius: inherit;
+}
+.game-card.owner-enemy::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(192, 57, 43, 0.12);
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Player border */
+.game-card.owner-player { border-color: rgba(52, 152, 219, 0.70); }
+.game-card.owner-enemy  { border-color: rgba(192, 57, 43, 0.70); }
+
+/* Tier glow */
+.card-tier-9 { box-shadow: 0 0 16px rgba(212,175,55,0.45); }
+.card-tier-8 { box-shadow: 0 0 10px rgba(212,175,55,0.25); }
+.card-tier-7 { box-shadow: 0 0 6px  rgba(212,175,55,0.15); }
+
+/* Element backgrounds */
+.card-elem-fire  { background: linear-gradient(145deg, #3a1008 0%, #200805 100%); }
+.card-elem-water { background: linear-gradient(145deg, #0a2440 0%, #051220 100%); }
+.card-elem-wind  { background: linear-gradient(145deg, #0a3018 0%, #051a0c 100%); }
+.card-elem-earth { background: linear-gradient(145deg, #301a05 0%, #1a0e03 100%); }
+.card-elem-ice   { background: linear-gradient(145deg, #0a2840 0%, #051520 100%); }
+.card-elem-none  { background: linear-gradient(145deg, #101828 0%, #080e18 100%); }
+
+/* Card value label */
+.card-val {
+  position: absolute;
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-weight: 700;
+  line-height: 1;
+  color: #f0dfa0;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+}
+.card-val.a-val { color: #f5d66e; }
+
+/* ── Board cell ── */
+.board-cell {
+  border: 1px solid rgba(212, 175, 55, 0.18);
+  background: rgba(10, 16, 32, 0.6);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s;
+  cursor: default;
+}
+.board-cell.droppable {
+  border-color: rgba(212, 175, 55, 0.55);
+  background: rgba(212, 175, 55, 0.08);
+  cursor: pointer;
+  animation: glow-pulse 1.5s ease-in-out infinite;
+}
+.board-cell.droppable:hover {
+  background: rgba(212, 175, 55, 0.14);
+  border-color: rgba(212, 175, 55, 0.8);
+}
+
+/* ── Capture flash ── */
+@keyframes capture-flash {
+  0%   { filter: brightness(3) saturate(0.5); }
+  60%  { filter: brightness(1.4); }
+  100% { filter: brightness(1); }
+}
+.capturing { animation: capture-flash 0.4s ease-out; }
+
+/* ── Place animation ── */
+@keyframes card-drop {
+  0%   { opacity: 0; transform: scale(0.5) rotate(-8deg); }
+  70%  { transform: scale(1.06) rotate(1deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+.card-placed { animation: card-drop 0.22s cubic-bezier(0.34,1.56,0.64,1) both; }
+
+/* ── Gold divider ── */
+.gold-divider {
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(212,175,55,0.5), transparent);
+}
+
+/* ── Button styles ── */
+.btn-gold {
+  @apply font-cinzel font-semibold tracking-widest uppercase
+         px-6 py-2 rounded
+         border border-game-gold text-game-gold
+         bg-transparent
+         transition-all duration-200;
+}
+.btn-gold:hover {
+  @apply bg-game-gold text-game-bg shadow-lg;
+  box-shadow: 0 0 20px rgba(212,175,55,0.5);
+}
+.btn-gold:active { transform: scale(0.97); }
+.btn-gold:disabled {
+  @apply opacity-30 cursor-not-allowed;
+  pointer-events: none;
+}
+
+.btn-crimson {
+  @apply font-cinzel font-semibold tracking-widest uppercase
+         px-6 py-2 rounded
+         border border-red-700 text-red-400
+         bg-transparent
+         transition-all duration-200;
+}
+.btn-crimson:hover {
+  @apply bg-red-900 text-red-200 border-red-500;
+  box-shadow: 0 0 16px rgba(192,57,43,0.4);
+}
+
+/* ── Region tile ── */
+.region-tile {
+  border: 1px solid rgba(212, 175, 55, 0.18);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.region-tile:hover:not(.locked) {
+  border-color: rgba(212, 175, 55, 0.55);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+}
+.region-tile.locked {
+  opacity: 0.45;
+  cursor: not-allowed;
+  filter: grayscale(0.4);
+}
+.region-tile.boss-cleared {
+  border-color: rgba(212, 175, 55, 0.45);
+}
+
+/* ── NPC card ── */
+.npc-card {
+  border: 1px solid rgba(212, 175, 55, 0.22);
+  border-radius: 10px;
+  padding: 16px;
+  transition: all 0.2s;
+  cursor: pointer;
+  background: rgba(12, 16, 32, 0.8);
+}
+.npc-card:hover {
+  border-color: rgba(212, 175, 55, 0.6);
+  background: rgba(20, 28, 48, 0.9);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+}
+.npc-card.boss {
+  border-color: rgba(212, 175, 55, 0.40);
+  background: rgba(20, 15, 5, 0.85);
+}
+.npc-card.defeated {
+  opacity: 0.5;
+}
+
+/* ── Overlay backdrop ── */
+.overlay-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 8, 17, 0.85);
+  backdrop-filter: blur(4px);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Cinzel heading helper ── */
+.heading-gold {
+  font-family: 'Cinzel', Georgia, serif;
+  color: #d4af37;
+  letter-spacing: 0.08em;
+}
+
+/* ── Mobile safe area ── */
+@supports (padding: max(0px)) {
+  .safe-pb { padding-bottom: max(8px, env(safe-area-inset-bottom)); }
+}
